@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stackly Certify — Skill Certification Marketplace</title>
+<meta name="description" content="Earn, verify and showcase real credentials. Stackly Certify is the marketplace where skills become provable assets.">
+<link rel="icon" href="./stackly.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  /* ---- color ---- */
+  --ink:        #080b10;
+  --ink-2:      #0d121a;
+  --surface:    #121924;
+  --surface-2:  #1a2330;
+  --line:       rgba(214,168,87,.16);
+  --line-soft:  rgba(244,241,230,.08);
+  --gold:       #d6a857;
+  --gold-2:     #f2cd82;
+  --gold-dim:   rgba(214,168,87,.35);
+  --teal:       #43c9ae;
+  --teal-dim:   rgba(67,201,174,.18);
+  --rose:       #e2765e;
+  --text:       #f4f1e6;
+  --text-dim:   #9aa2b3;
+  --text-faint: #616a7c;
+
+  /* ---- type ---- */
+  --f-display: 'Fraunces', serif;
+  --f-body:    'Manrope', sans-serif;
+  --f-mono:    'JetBrains Mono', monospace;
+
+  /* ---- layout ---- */
+  --maxw: 1320px;
+  --pad: clamp(20px, 5vw, 64px);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(.16,.84,.44,1);
+}
+
+/* ---------------------------------- reset --------------------------------- */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--f-body);
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+ul{ list-style:none; }
+button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+input,textarea,select{ font-family:inherit; color:inherit; }
+::selection{ background:var(--gold); color:var(--ink); }
+
+h1,h2,h3,h4{ font-family:var(--f-display); font-weight:500; line-height:1.08; letter-spacing:-.01em; }
+
+.container{ max-width:var(--maxw); margin:0 auto; padding-inline:var(--pad); }
+.section{ position:relative; padding-top:0; padding-bottom:clamp(72px,10vw,140px); }
+.section-tight{ padding-top:0; padding-bottom:clamp(48px,6vw,88px); }
+
+/* ---------------------------- background texture --------------------------- */
+.grain{
+  position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.aurora{
+  position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+.aurora span{
+  position:absolute; border-radius:50%; filter:blur(120px); opacity:.35; will-change:transform;
+}
+.aurora .a1{ width:46vw; height:46vw; top:-14vw; left:-10vw; background:radial-gradient(circle,var(--gold) 0%, transparent 70%); }
+.aurora .a2{ width:38vw; height:38vw; bottom:-14vw; right:-8vw; background:radial-gradient(circle,var(--teal) 0%, transparent 70%); opacity:.22; }
+.aurora .a3{ width:30vw; height:30vw; top:40%; left:60%; background:radial-gradient(circle,var(--rose) 0%, transparent 70%); opacity:.14; }
+
+/* ------------------------------- hero background ------------------------------- */
+.hero{ overflow:hidden; }
+.hero-bg{ position:absolute; inset:0; z-index:0; overflow:hidden; }
+.hero-bg img{
+  width:100%; height:100%; object-fit:cover; object-position:center;
+  transform:scale(1.1); filter:saturate(.9) brightness(.55);
+}
+.hero-bg::after{
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(120% 90% at 18% 20%, rgba(8,11,16,.35), rgba(8,11,16,.88) 60%),
+    linear-gradient(180deg, rgba(8,11,16,.55) 0%, rgba(8,11,16,.75) 55%, var(--ink) 96%);
+}
+.hero > .container{ position:relative; z-index:2; }
+
+/* -------------------------------- typography -------------------------------- */
+.eyebrow{
+  font-family:var(--f-mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--gold); display:flex; align-items:center; gap:10px; margin-bottom:18px;
+}
+.eyebrow::before{ content:''; width:26px; height:1px; background:var(--gold); display:inline-block; }
+
+.display-1{ font-size:clamp(2.6rem,6vw,5.4rem); }
+.display-2{ font-size:clamp(2.1rem,4.4vw,3.6rem); }
+.display-3{ font-size:clamp(1.5rem,2.6vw,2.1rem); }
+.italic{ font-style:italic; font-weight:400; color:var(--gold-2); }
+.lead{ font-size:clamp(1.05rem,1.6vw,1.25rem); color:var(--text-dim); max-width:640px; font-weight:400; }
+.mono{ font-family:var(--f-mono); }
+
+.split-lines{ overflow:hidden; }
+.line{ display:block; }
+
+/* --------------------------------- buttons ---------------------------------- */
+.btn{
+  position:relative; display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--f-mono); font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  padding:15px 30px; border-radius:100px; overflow:hidden; isolation:isolate;
+  transition:transform .4s var(--ease), border-color .4s var(--ease), color .4s var(--ease);
+}
+.btn-primary{ background:var(--gold); color:var(--ink); font-weight:600; }
+.btn-primary:hover{ transform:translateY(-3px); box-shadow:0 14px 34px -10px rgba(214,168,87,.55); }
+.btn-ghost{ border:1px solid var(--line-soft); color:var(--text); }
+.btn-ghost:hover{ border-color:var(--gold); color:var(--gold-2); transform:translateY(-3px); }
+.btn-sm{ padding:10px 20px; font-size:11px; }
+.btn svg{ width:14px; height:14px; transition:transform .4s var(--ease); }
+.btn:hover svg{ transform:translate(3px,-3px); }
+
+.magnetic{ display:inline-block; }
+
+/* ---------------------------------- navbar ----------------------------------- */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:22px var(--pad); display:flex; align-items:center; justify-content:space-between;
+  transition:background .5s var(--ease), padding .5s var(--ease), border-color .5s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled{ background:rgba(8,11,16,.82); backdrop-filter:blur(16px); padding-block:14px; border-color:var(--line-soft); }
+.logo img{ height:70px; width:auto; }
+.nav-links{ display:flex; align-items:center; gap:36px; }
+.nav-links a{
+  font-family:var(--f-mono); font-size:12.5px; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--text-dim); position:relative; padding-bottom:4px; transition:color .3s;
+}
+.nav-links a::after{ content:''; position:absolute; left:0; bottom:0; height:1px; width:0; background:var(--gold); transition:width .35s var(--ease); }
+.nav-links a:hover, .nav-links a.active{ color:var(--text); }
+.nav-links a:hover::after, .nav-links a.active::after{ width:100%; }
+.nav-actions{ display:flex; align-items:center; gap:14px; }
+.nav-burger{ display:none; flex-direction:column; gap:5px; width:26px; z-index:200; }
+.nav-burger span{ height:1.5px; background:var(--text); width:100%; transition:transform .4s var(--ease), opacity .3s; }
+
+.mobile-menu{
+  position:fixed; inset:0; background:var(--ink-2); z-index:90; display:flex; flex-direction:column;
+  justify-content:center; gap:22px; padding:var(--pad); transform:translateY(-100%); transition:transform .6s var(--ease);
+}
+.mobile-menu.open{ transform:translateY(0); }
+.mobile-menu a{ font-family:var(--f-display); font-size:2.4rem; color:var(--text); }
+
+/* ---------------------------------- footer ------------------------------------ */
+.footer{ border-top:1px solid var(--line-soft); padding:70px 0 30px; position:relative; z-index:2; }
+.footer-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:60px; }
+.footer-brand p{ color:var(--text-dim); max-width:280px; margin-top:16px; font-size:14px; }
+.footer-social{ display:flex; align-items:center; gap:16px; margin-top:22px; }
+.footer-social a{ display:inline-flex; }
+.footer-legal{ display:flex; align-items:center; gap:24px; }
+.footer-legal a{ color:var(--text-faint); }
+.footer-legal a:hover{ color:var(--gold-2); }
+.footer h5{ font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:18px; }
+.footer li{ margin-bottom:10px; }
+.footer a{ color:var(--text-dim); font-size:14px; transition:color .3s; }
+.footer a:hover{ color:var(--gold-2); }
+.footer-bottom{ display:flex; justify-content:space-between; align-items:center; padding-top:26px; border-top:1px solid var(--line-soft); font-size:12.5px; color:var(--text-faint); font-family:var(--f-mono); flex-wrap:wrap; gap:12px; }
+.social{ display:flex; gap:16px; }
+
+/* ---------------------------------- cards -------------------------------------- */
+.card{
+  background:linear-gradient(180deg,var(--surface),var(--surface-2));
+  border:1px solid var(--line-soft); border-radius:var(--radius);
+  padding:32px; position:relative; overflow:hidden; transition:transform .5s var(--ease), border-color .5s var(--ease);
+}
+.card:hover{ transform:translateY(-6px); border-color:var(--gold-dim); }
+.card::before{
+  content:''; position:absolute; inset:0; opacity:0; transition:opacity .5s;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%), rgba(214,168,87,.10), transparent 60%);
+}
+.card:hover::before{ opacity:1; }
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+
+/* ------------------------------- seal (signature) ------------------------------- */
+.seal{ position:relative; width:220px; height:220px; }
+.seal svg{ width:100%; height:100%; }
+.seal .ring{ transform-origin:50% 50%; }
+.seal-mini{ width:56px; height:56px; }
+
+/* ---------------------------------- badges -------------------------------------- */
+.tag{
+  display:inline-flex; align-items:center; gap:6px; font-family:var(--f-mono); font-size:11px;
+  letter-spacing:.06em; text-transform:uppercase; padding:6px 12px; border-radius:100px;
+  border:1px solid var(--line); color:var(--gold-2); background:rgba(214,168,87,.06);
+}
+.tag-teal{ color:var(--teal); border-color:rgba(67,201,174,.3); background:var(--teal-dim); }
+.dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+/* ---------------------------------- stats bar ------------------------------------ */
+.stat-num{ font-family:var(--f-display); font-size:clamp(2rem,4vw,3.2rem); color:var(--gold-2); font-weight:500; }
+.stat-label{ font-family:var(--f-mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-dim); margin-top:6px; }
+
+/* --------------------------------- marquee -------------------------------------- */
+.marquee{ overflow:hidden; border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft); padding:26px 0; }
+.marquee-track{ display:flex; gap:60px; width:max-content; }
+.marquee-track span{ font-family:var(--f-display); font-style:italic; font-size:clamp(1.4rem,2.6vw,2.2rem); color:var(--text-faint); white-space:nowrap; display:flex; align-items:center; gap:60px; }
+.marquee-track span em{ color:var(--gold); font-style:normal; font-family:var(--f-mono); font-size:.5em; }
+
+/* --------------------------------- images / media -------------------------------- */
+.media{ border-radius:var(--radius); overflow:hidden; position:relative; }
+.media img{ width:100%; height:100%; object-fit:cover; transform:scale(1.12); }
+.media-frame{ position:absolute; inset:14px; border:1px solid rgba(244,241,230,.18); border-radius:calc(var(--radius) - 4px); pointer-events:none; opacity:0; transition:opacity .6s var(--ease) .3s; }
+.reveal-in .media-frame{ opacity:1; }
+
+/* --------------------------------- forms ----------------------------------------- */
+.field{ margin-bottom:20px; }
+.field label{ display:block; font-family:var(--f-mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:10px; }
+.field input, .field textarea, .field select{
+  width:100%; background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--radius-sm);
+  padding:14px 16px; font-size:15px; color:var(--text); transition:border-color .3s, background .3s;
+}
+.field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--gold); background:var(--surface-2); }
+.field textarea{ resize:vertical; min-height:120px; }
+.custom-select{ position:relative; }
+.custom-select select{ appearance:none; }
+.custom-select::after{ content:'▾'; position:absolute; right:16px; top:50%; transform:translateY(-50%); color:var(--gold); pointer-events:none; }
+.checkline{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--text-dim); }
+.checkline input{ width:16px; height:16px; accent-color:var(--gold); }
+
+/* toast */
+.toast-stack{ position:fixed; bottom:24px; right:24px; z-index:999; display:flex; flex-direction:column; gap:10px; }
+.toast{
+  display:flex; align-items:center; gap:12px; background:var(--surface-2); border:1px solid var(--line);
+  border-left:3px solid var(--gold); padding:14px 18px; border-radius:var(--radius-sm); min-width:260px;
+  box-shadow:0 20px 40px -14px rgba(0,0,0,.6); font-size:13.5px;
+}
+.toast.success{ border-left-color:var(--teal); }
+.toast.error{ border-left-color:var(--rose); }
+
+/* ---------------------------- cursor-follow badge (desktop) --------------------- */
+.cursor-badge{
+  position:fixed; top:0; left:0; width:86px; height:86px; border-radius:50%; pointer-events:none; z-index:200;
+  display:flex; align-items:center; justify-content:center; opacity:0; transform:translate(-50%,-50%) scale(.6);
+  background:rgba(8,11,16,.85); border:1px solid var(--gold-dim); backdrop-filter:blur(6px);
+}
+.cursor-badge span{ font-family:var(--f-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-2); text-align:center; }
+
+/* ---------------------------------- dashboard shell ------------------------------ */
+.dash{ display:grid; grid-template-columns:264px 1fr; min-height:100vh; }
+.dash-sidebar{
+  background:var(--ink-2); border-right:1px solid var(--line-soft); padding:26px 22px; position:sticky; top:0; height:100vh;
+  display:flex; flex-direction:column; z-index:50;
+}
+.dash-sidebar .logo{ margin-bottom:36px; }
+.dash-nav{ display:flex; flex-direction:column; gap:4px; flex:1; }
+.dash-nav a{
+  display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:var(--radius-sm); color:var(--text-dim);
+  font-size:14px; font-weight:500; transition:background .3s, color .3s;
+}
+.dash-nav a svg{ width:18px; height:18px; opacity:.8; }
+.dash-nav a:hover{ background:var(--surface); color:var(--text); }
+.dash-nav a.active{ background:linear-gradient(90deg, rgba(214,168,87,.14), transparent); color:var(--gold-2); border:1px solid var(--line); }
+.dash-user{ display:flex; align-items:center; gap:12px; padding-top:20px; border-top:1px solid var(--line-soft); margin-top:16px; }
+.dash-user img{ width:38px; height:38px; border-radius:50%; object-fit:cover; }
+.dash-user .n{ font-size:13.5px; font-weight:600; }
+.dash-user .r{ font-size:11px; color:var(--text-dim); font-family:var(--f-mono); }
+.dash-main{ padding:34px clamp(20px,3vw,44px); }
+.dash-topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; flex-wrap:wrap; gap:16px; }
+.dash-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:32px; }
+.dash-card{ background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--radius); padding:22px; }
+.dash-card .top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.dash-card .icon{ width:38px; height:38px; border-radius:10px; background:rgba(214,168,87,.12); display:flex; align-items:center; justify-content:center; color:var(--gold); }
+.trend{ font-family:var(--f-mono); font-size:11.5px; }
+.trend.up{ color:var(--teal); }
+.trend.down{ color:var(--rose); }
+.panel{ background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--radius); padding:26px; }
+.panel-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+.table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+.table th{ text-align:left; font-family:var(--f-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); padding:10px 12px; border-bottom:1px solid var(--line-soft); }
+.table td{ padding:14px 12px; border-bottom:1px solid var(--line-soft); color:var(--text-dim); }
+.table tr:hover td{ color:var(--text); background:rgba(244,241,230,.02); }
+.status-pill{ padding:4px 10px; border-radius:100px; font-family:var(--f-mono); font-size:10.5px; text-transform:uppercase; }
+.status-pill.active{ background:var(--teal-dim); color:var(--teal); }
+.status-pill.pending{ background:rgba(214,168,87,.14); color:var(--gold-2); }
+.status-pill.expired{ background:rgba(226,118,94,.15); color:var(--rose); }
+.progress{ height:6px; border-radius:100px; background:var(--surface-2); overflow:hidden; }
+.progress > span{ display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--teal)); border-radius:100px; }
+
+/* ---------------------------- animated reveal base states ----------------------- */
+.reveal{ opacity:0; transform:translateY(46px); }
+.fade{ opacity:0; }
+.scale-in{ opacity:0; transform:scale(.9); }
+
+/* ---------------------------------- misc ----------------------------------------- */
+.divider{ height:1px; background:var(--line-soft); width:100%; }
+.pill-nav{ display:flex; gap:10px; flex-wrap:wrap; }
+.pill-nav button{
+  font-family:var(--f-mono); font-size:12px; text-transform:uppercase; letter-spacing:.05em; padding:9px 18px;
+  border-radius:100px; border:1px solid var(--line-soft); color:var(--text-dim); transition:.3s;
+}
+.pill-nav button.active, .pill-nav button:hover{ border-color:var(--gold); color:var(--gold-2); background:rgba(214,168,87,.06); }
+
+.split-badge-row{ display:flex; gap:14px; flex-wrap:wrap; }
+
+/* ---------------------------------- FAQ / details -------------------------------- */
+details summary{ list-style:none; }
+details summary::-webkit-details-marker{ display:none; }
+details summary::after{
+  content:'+'; float:right; font-family:var(--f-mono); color:var(--gold); font-size:1.2rem; line-height:1;
+  transition:transform .3s var(--ease);
+}
+details[open] summary::after{ transform:rotate(45deg); }
+
+/* ================================= MEDIA QUERIES ================================= */
+@media (max-width:1180px){
+  .grid-4{ grid-template-columns:repeat(2,1fr); }
+  .dash-cards{ grid-template-columns:repeat(2,1fr); }
+  .footer-grid{ grid-template-columns:repeat(3,1fr); }
+  .footer-brand{ grid-column:1 / -1; }
+}
+@media (max-width:1024px){
+  .nav-links{ display:none; }
+  .nav-burger{ display:flex; }
+  .grid-3{ grid-template-columns:repeat(2,1fr); }
+  .dash{ grid-template-columns:1fr; }
+  .dash-sidebar{ position:fixed; left:0; top:0; width:264px; transform:translateX(-100%); transition:transform .4s var(--ease); box-shadow:30px 0 60px rgba(0,0,0,.4); }
+  .dash-sidebar.open{ transform:translateX(0); }
+  .dash-toggle{ display:inline-flex !important; }
+}
+@media (max-width:860px){
+  .grid-2{ grid-template-columns:1fr; }
+  .footer-grid{ grid-template-columns:1fr 1fr; gap:32px; }
+  .seal{ width:170px; height:170px; }
+}
+@media (max-width:640px){
+  .grid-3, .grid-4{ grid-template-columns:1fr; }
+  .dash-cards{ grid-template-columns:1fr; }
+  .footer-grid{ grid-template-columns:1fr; }
+  .footer-bottom{ flex-direction:column; align-items:flex-start; }
+  .display-1{ font-size:clamp(2.1rem,9vw,3rem); }
+  .cursor-badge{ display:none; }
+  .marquee-track span{ font-size:1.3rem; }
+}
+@media (max-width:420px){
+  .btn{ padding:13px 22px; font-size:12px; }
+  .card{ padding:24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="preloader">
+  <div class="pre-inner">
+    <span class="pre-word">STACKLY&nbsp;CERTIFY</span>
+    <div class="pre-bar"><div class="pre-fill"></div></div>
+  </div>
+</div>
+
+<div class="grain"></div>
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="cursor-badge"><span>View<br>Credential</span></div>
+
+<!-- ============================== NAV ============================== -->
+<header class="nav">
+  <a href="index.html" class="logo"><img src="./stackly.png" alt="Stackly"></a>
+  <nav class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="certification.html">Certifications</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm magnetic">Log In</a>
+    <a href="certification.html" class="btn btn-primary btn-sm magnetic">Get Certified</a>
+    <button class="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="certification.html">Certifications</a>
+  <a href="contact.html">Contact</a>
+  <a href="login.html">Log In</a>
+</div>
+
+<main>
+  <!-- ============================== HERO ============================== -->
+  <section class="hero section" style="padding-top:clamp(150px,18vw,220px);">
+    <div class="hero-bg" data-hero-scale>
+      <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=3840&q=80" alt="">
+    </div>
+    <div class="container">
+      <div class="grid-2" style="align-items:center; gap:40px;">
+        <div>
+          <div class="eyebrow" data-hero-fade>Skill Certification Marketplace</div>
+          <h1 class="display-1 split-lines" data-split-hero>Proof of<br>skill, <span class="italic">verified</span><br>for life.</h1>
+          <p class="lead" data-hero-fade style="margin-top:26px;">Stackly Certify turns hands-on assessments into portable, blockchain-anchored credentials — built by working practitioners, trusted by 1,400+ hiring teams.</p>
+          <div class="split-badge-row" data-hero-fade style="margin-top:34px;">
+            <a href="certification.html" class="btn btn-primary magnetic">Browse Certifications
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </a>
+            <a href="about.html" class="btn btn-ghost magnetic">How It Works</a>
+          </div>
+          <div class="split-badge-row" data-hero-fade style="margin-top:36px;">
+            <span class="tag"><span class="dot"></span>50K+ Verified</span>
+            <span class="tag tag-teal"><span class="dot"></span>Employer Recognized</span>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:center;" data-hero-scale>
+          <div class="seal">
+            <svg viewBox="0 0 220 220">
+              <g class="ring ring-rotate">
+                <circle cx="110" cy="110" r="102" fill="none" stroke="#d6a857" stroke-width="1" stroke-dasharray="2 8"/>
+              </g>
+              <g class="ring ring-rotate-rev">
+                <circle cx="110" cy="110" r="86" fill="none" stroke="#43c9ae" stroke-width="1" opacity=".5" stroke-dasharray="1 6"/>
+              </g>
+              <circle cx="110" cy="110" r="70" fill="rgba(214,168,87,.06)" stroke="#d6a857" stroke-width="1.5"/>
+              <text x="110" y="102" text-anchor="middle" fill="#f2cd82" font-family="Fraunces, serif" font-size="15" font-style="italic">Verified</text>
+              <text x="110" y="124" text-anchor="middle" fill="#9aa2b3" font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="2">STACKLY · CERTIFY</text>
+              <path id="checkpath" d="M92 112 L104 124 L130 96" fill="none" stroke="#43c9ae" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== MARQUEE ============================== -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>
+        <em>01</em> Cloud Architecture <em>02</em> Data Engineering <em>03</em> Product Design <em>04</em> Frontend Systems <em>05</em> Cyber Defense <em>06</em> AI Engineering
+      </span>
+    </div>
+  </div>
+
+  <!-- ============================== STATS ============================== -->
+  <section class="section-tight">
+    <div class="container grid-4" data-stagger>
+      <div class="reveal"><div class="stat-num" data-count="52000" data-suffix="+">0</div><div class="stat-label">Credentials Issued</div></div>
+      <div class="reveal"><div class="stat-num" data-count="180">0</div><div class="stat-label">Certification Tracks</div></div>
+      <div class="reveal"><div class="stat-num" data-count="1400" data-suffix="+">0</div><div class="stat-label">Hiring Partners</div></div>
+      <div class="reveal"><div class="stat-num" data-count="97" data-suffix="%">0</div><div class="stat-label">Employer Trust Score</div></div>
+    </div>
+  </section>
+
+  <!-- ============================== WHAT IT IS ============================== -->
+  <section class="section">
+    <div class="container grid-2" style="align-items:center;">
+      <div class="media reveal" style="aspect-ratio:4/5;">
+        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=3840&q=80" alt="Practitioner completing a live skill assessment">
+        <div class="media-frame"></div>
+      </div>
+      <div>
+        <div class="eyebrow">Why Stackly Certify</div>
+        <h2 class="display-2 split-lines" data-split>Credentials that hold up<br>under scrutiny.</h2>
+        <p class="lead" style="margin-top:20px;">Most certificates prove attendance. Ours prove ability. Every track pairs a proctored, project-based assessment with a cryptographically signed record employers can verify in seconds — no phone calls, no PDFs, no guesswork.</p>
+        <div style="margin-top:32px; display:grid; gap:18px;">
+          <div class="reveal" style="display:flex; gap:16px;">
+            <span class="mono" style="color:var(--gold);">01</span>
+            <div><h4 style="font-size:1.05rem;">Built by practitioners</h4><p style="color:var(--text-dim); font-size:14px; margin-top:4px;">Assessments are written and graded by senior engineers, designers and analysts currently working in the field.</p></div>
+          </div>
+          <div class="reveal" style="display:flex; gap:16px;">
+            <span class="mono" style="color:var(--gold);">02</span>
+            <div><h4 style="font-size:1.05rem;">Anchored & tamper-evident</h4><p style="color:var(--text-dim); font-size:14px; margin-top:4px;">Every credential is hashed and timestamped, so a shared link always resolves to the original, unaltered result.</p></div>
+          </div>
+          <div class="reveal" style="display:flex; gap:16px;">
+            <span class="mono" style="color:var(--gold);">03</span>
+            <div><h4 style="font-size:1.05rem;">Portable everywhere</h4><p style="color:var(--text-dim); font-size:14px; margin-top:4px;">One profile, embeddable badges, and a public verification page that follows you between jobs.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== FEATURED TRACKS ============================== -->
+  <section class="section" style="background:var(--ink-2);">
+    <div class="container">
+      <div class="grid-2" style="align-items:flex-end; margin-bottom:50px;">
+        <div>
+          <div class="eyebrow">Featured tracks</div>
+          <h2 class="display-2 split-lines" data-split>Certifications employers<br>actually ask for.</h2>
+        </div>
+        <p class="lead reveal">Curated from real job requisitions across 40+ industries and refreshed quarterly against market demand.</p>
+      </div>
+
+      <div class="grid-3" data-stagger>
+        <div class="card reveal">
+          <span class="tag tag-teal">Engineering</span>
+          <h3 class="display-3" style="margin-top:20px;">Frontend Systems Architect</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin:14px 0 22px;">Component architecture, performance budgets and animation systems at production scale.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--f-mono); font-size:12px; color:var(--text-dim);">
+            <span>6 modules · 14 hrs</span><span style="color:var(--gold-2);">₹6,499</span>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="tag">Data</span>
+          <h3 class="display-3" style="margin-top:20px;">Applied Data Engineering</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin:14px 0 22px;">Pipelines, warehousing and streaming systems evaluated on a live dataset.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--f-mono); font-size:12px; color:var(--text-dim);">
+            <span>8 modules · 22 hrs</span><span style="color:var(--gold-2);">₹8,999</span>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="tag">Security</span>
+          <h3 class="display-3" style="margin-top:20px;">Cloud Security Practitioner</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin:14px 0 22px;">Threat modeling and incident response inside a sandboxed cloud environment.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--f-mono); font-size:12px; color:var(--text-dim);">
+            <span>7 modules · 18 hrs</span><span style="color:var(--gold-2);">₹7,299</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:48px;">
+        <a href="certification.html" class="btn btn-ghost magnetic">View all 180 tracks</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CATEGORIES ============================== -->
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">Browse by category</div>
+      <h2 class="display-2 split-lines" data-split style="max-width:600px;">Every discipline,<br>one verification standard.</h2>
+      <div class="grid-4" data-stagger style="margin-top:50px;">
+        <div class="card reveal">
+          <span class="tag tag-teal">32 tracks</span>
+          <h3 class="display-3" style="margin-top:18px; font-size:1.4rem;">Engineering</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:10px;">Frontend, backend, mobile and platform tracks graded on shipped code.</p>
+        </div>
+        <div class="card reveal">
+          <span class="tag">27 tracks</span>
+          <h3 class="display-3" style="margin-top:18px; font-size:1.4rem;">Data &amp; AI</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:10px;">Pipelines, analytics and applied machine learning on real datasets.</p>
+        </div>
+        <div class="card reveal">
+          <span class="tag">21 tracks</span>
+          <h3 class="display-3" style="margin-top:18px; font-size:1.4rem;">Product &amp; Design</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:10px;">Research, UX writing and interface systems reviewed by working leads.</p>
+        </div>
+        <div class="card reveal">
+          <span class="tag tag-teal">19 tracks</span>
+          <h3 class="display-3" style="margin-top:18px; font-size:1.4rem;">Security</h3>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:10px;">Offensive and defensive skills tested inside sandboxed environments.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== HOW IT WORKS ============================== -->
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">The process</div>
+      <h2 class="display-2 split-lines" data-split style="max-width:600px;">From first attempt to<br>verified credential.</h2>
+      <div class="grid-4" data-stagger style="margin-top:56px;">
+        <div class="reveal">
+          <div class="seal-mini" style="margin-bottom:18px;"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="#d6a857" stroke-width="1.5"/><text x="28" y="34" text-anchor="middle" fill="#f2cd82" font-family="JetBrains Mono" font-size="16">01</text></svg></div>
+          <h4 style="font-size:1.05rem;">Choose a track</h4>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:8px;">Pick from 180 real-world skill paths mapped to live job requirements.</p>
+        </div>
+        <div class="reveal">
+          <div class="seal-mini" style="margin-bottom:18px;"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="#d6a857" stroke-width="1.5"/><text x="28" y="34" text-anchor="middle" fill="#f2cd82" font-family="JetBrains Mono" font-size="16">02</text></svg></div>
+          <h4 style="font-size:1.05rem;">Build & submit</h4>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:8px;">Complete a proctored, project-based assessment inside your own environment.</p>
+        </div>
+        <div class="reveal">
+          <div class="seal-mini" style="margin-bottom:18px;"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="#d6a857" stroke-width="1.5"/><text x="28" y="34" text-anchor="middle" fill="#f2cd82" font-family="JetBrains Mono" font-size="16">03</text></svg></div>
+          <h4 style="font-size:1.05rem;">Reviewed by experts</h4>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:8px;">Practicing professionals grade against a public, transparent rubric.</p>
+        </div>
+        <div class="reveal">
+          <div class="seal-mini" style="margin-bottom:18px;"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="#d6a857" stroke-width="1.5"/><text x="28" y="34" text-anchor="middle" fill="#f2cd82" font-family="JetBrains Mono" font-size="16">04</text></svg></div>
+          <h4 style="font-size:1.05rem;">Credential issued</h4>
+          <p style="color:var(--text-dim); font-size:14px; margin-top:8px;">A verifiable badge lands in your dashboard, ready to share anywhere.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== GALLERY / PARALLAX ============================== -->
+  <section class="section" style="overflow:hidden;">
+    <div class="container">
+      <div class="grid-3" style="gap:20px;">
+        <div class="media reveal" style="aspect-ratio:3/4; margin-top:40px;">
+          <img data-parallax="-16" src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=3840&q=80" alt="Focused practitioner working through an assessment">
+          <div class="media-frame"></div>
+        </div>
+        <div class="media reveal" style="aspect-ratio:3/4;">
+          <img data-parallax="-10" src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=3840&q=80" alt="Code review on a large monitor">
+          <div class="media-frame"></div>
+        </div>
+        <div class="media reveal" style="aspect-ratio:3/4; margin-top:70px;">
+          <img data-parallax="-20" src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=3840&q=80" alt="Team celebrating a certification milestone">
+          <div class="media-frame"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== TESTIMONIALS ============================== -->
+  <section class="section" style="background:var(--ink-2);">
+    <div class="container">
+      <div class="eyebrow">Trusted by practitioners</div>
+      <h2 class="display-2 split-lines" data-split style="max-width:560px;">What certified members say.</h2>
+      <div class="grid-3" data-stagger style="margin-top:50px;">
+        <div class="card reveal">
+          <p class="italic" style="font-size:1.1rem; color:var(--text);">"The assessment felt like a real sprint, not a quiz. Recruiters recognized the badge immediately."</p>
+          <div style="margin-top:22px; display:flex; align-items:center; gap:12px;">
+            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80" style="width:42px; height:42px; border-radius:50%; object-fit:cover;" alt="Ananya R., certified member">
+            <div><div style="font-weight:600; font-size:14px;">Ananya R.</div><div style="font-size:12px; color:var(--text-dim);">Frontend Systems Architect</div></div>
+          </div>
+        </div>
+        <div class="card reveal">
+          <p class="italic" style="font-size:1.1rem; color:var(--text);">"We replaced our internal skills test with Stackly's verification link. Cut screening time by half."</p>
+          <div style="margin-top:22px; display:flex; align-items:center; gap:12px;">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80" style="width:42px; height:42px; border-radius:50%; object-fit:cover;" alt="Karthik V., hiring partner">
+            <div><div style="font-weight:600; font-size:14px;">Karthik V.</div><div style="font-size:12px; color:var(--text-dim);">Hiring Partner, Fintra</div></div>
+          </div>
+        </div>
+        <div class="card reveal">
+          <p class="italic" style="font-size:1.1rem; color:var(--text);">"Finally a certificate I could defend in the interview room, because I actually built the thing."</p>
+          <div style="margin-top:22px; display:flex; align-items:center; gap:12px;">
+            <img src="https://images.unsplash.com/photo-1607346256330-dee7af15f7c5?w=200&q=80" style="width:42px; height:42px; border-radius:50%; object-fit:cover;" alt="Meera S., certified member">
+            <div><div style="font-weight:600; font-size:14px;">Meera S.</div><div style="font-size:12px; color:var(--text-dim);">Applied Data Engineer</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== FAQ ============================== -->
+  <section class="section">
+    <div class="container">
+      <div class="grid-2" style="align-items:flex-start; gap:60px;">
+        <div>
+          <div class="eyebrow">Questions</div>
+          <h2 class="display-2 split-lines" data-split style="max-width:420px;">Before you<br>start a track.</h2>
+          <p class="lead" style="margin-top:20px;">Can't find what you're looking for? <a href="contact.html" style="color:var(--gold-2); text-decoration:underline;">Talk to our team</a>.</p>
+        </div>
+        <div style="display:grid; gap:14px;" data-stagger>
+          <details class="card reveal" style="padding:24px 28px;">
+            <summary style="cursor:pointer; font-family:var(--f-display); font-size:1.1rem; list-style:none;">How long does an assessment take?</summary>
+            <p style="color:var(--text-dim); font-size:14px; margin-top:12px;">Most tracks run 12–24 hours of proctored work, split across a window of up to two weeks so you can pace it around a job or studies.</p>
+          </details>
+          <details class="card reveal" style="padding:24px 28px;">
+            <summary style="cursor:pointer; font-family:var(--f-display); font-size:1.1rem; list-style:none;">What happens if I don't pass?</summary>
+            <p style="color:var(--text-dim); font-size:14px; margin-top:12px;">You get a detailed rubric breakdown from your reviewer and can resit the assessment after 14 days at no extra cost.</p>
+          </details>
+          <details class="card reveal" style="padding:24px 28px;">
+            <summary style="cursor:pointer; font-family:var(--f-display); font-size:1.1rem; list-style:none;">How do employers verify a credential?</summary>
+            <p style="color:var(--text-dim); font-size:14px; margin-top:12px;">Every badge links to a public verification page showing the signed hash, issue date and rubric score — no login required.</p>
+          </details>
+          <details class="card reveal" style="padding:24px 28px;">
+            <summary style="cursor:pointer; font-family:var(--f-display); font-size:1.1rem; list-style:none;">Do credentials expire?</summary>
+            <p style="color:var(--text-dim); font-size:14px; margin-top:12px;">Most tracks stay valid for three years, after which you can recertify at a discounted rate to reflect current tooling.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CTA ============================== -->
+  <section class="section">
+    <div class="container">
+      <div class="card reveal" style="padding:clamp(40px,6vw,80px); text-align:center; border-color:var(--gold-dim);">
+        <div class="eyebrow" style="justify-content:center;">Start today</div>
+        <h2 class="display-2" style="max-width:680px; margin:0 auto;">Your skills deserve more than a line on a résumé.</h2>
+        <div style="margin-top:34px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+          <a href="certification.html" class="btn btn-primary magnetic">Start an Assessment</a>
+          <a href="contact.html" class="btn btn-ghost magnetic">Talk to Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><img src="./stackly.png" alt="Stackly"></a>
+        <p>The marketplace where skills are assessed, verified and made portable — for practitioners and the teams who hire them.</p>
+        <div class="footer-social">
+          <a href="error.html" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="error.html" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 0 1 4 0v4M11 13v4"/></svg></a>
+          <a href="error.html" aria-label="WhatsApp">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l2-5.5A8.5 8.5 0 1 1 21 11.5z"/>
+              <path d="M9 8.5c.5 2 2 3.5 4 4.5l1.5-1c.5-.3 1-.2 1.4.1l1.1.8c.4.3.5.8.3 1.2-.5 1-1.5 1.5-2.5 1.4-3.5-.5-6.8-3.8-7.3-7.3-.1-1 .4-2 1.4-2.5.4-.2.9-.1 1.2.3l.8 1.1c.3.4.4.9.1 1.4L9 8.5z"/>
+            </svg>
+          </a>
+          <a href="error.html" aria-label="Email">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/>
+              <path d="M3 7l9 6 9-6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="certification.html">Certifications</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="./certification.html">Engineering</a></li>
+          <li><a href="./certification.html">Data</a></li>
+          <li><a href="./certification.html">Security</a></li>
+          <li><a href="./certification.html">Design</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Get in touch</h5>
+        <a href="mailto:hello@stackly.events" style="display:block; padding:7px 0;">hello@stackly.events</a>
+        <a href="tel:+914272200100" style="display:block; padding:7px 0;">+91 9876543210</a>
+        <span style="display:block; color:var(--mist); padding:7px 0; font-size:.92rem;">Salem, Tamil Nadu</span>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="error.html">Privacy Policy</a></li>
+          <li><a href="error.html">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Stackly Certify. All rights reserved.</span>
+      
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger, SplitText);
+
+window.addEventListener('load', () => {
+  const pre = document.querySelector('.preloader');
+  if(pre){
+    gsap.to(pre.querySelector('.pre-fill'), { scaleX:1, duration:1.1, ease:'power3.inOut' });
+    gsap.to(pre, {
+      yPercent:-100, duration:.9, ease:'power4.inOut', delay:.5,
+      onComplete:() => { pre.style.display='none'; playHero(); }
+    });
+  } else {
+    playHero();
+  }
+  ScrollTrigger.refresh();
+});
+
+const nav = document.querySelector('.nav');
+if(nav){
+  ScrollTrigger.create({
+    start: 80, end: 99999,
+    onUpdate: self => nav.classList.toggle('scrolled', self.scroll() > 80)
+  });
+}
+const burger = document.querySelector('.nav-burger');
+const mobileMenu = document.querySelector('.mobile-menu');
+if(burger && mobileMenu){
+  burger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+    burger.classList.toggle('open');
+    const spans = burger.querySelectorAll('span');
+    if(burger.classList.contains('open')){
+      gsap.to(spans[0], { rotate:45, y:6.5, duration:.35 });
+      gsap.to(spans[1], { opacity:0, duration:.2 });
+      gsap.to(spans[2], { rotate:-45, y:-6.5, duration:.35 });
+      gsap.from(mobileMenu.querySelectorAll('a'), { y:40, opacity:0, stagger:.06, duration:.6, ease:'power3.out', delay:.15 });
+    } else {
+      gsap.to(spans[0], { rotate:0, y:0, duration:.35 });
+      gsap.to(spans[1], { opacity:1, duration:.3, delay:.1 });
+      gsap.to(spans[2], { rotate:0, y:0, duration:.35 });
+    }
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileMenu.classList.remove('open'); burger.classList.remove('open');
+  }));
+}
+
+const dashToggle = document.querySelector('.dash-toggle');
+const dashSidebar = document.querySelector('.dash-sidebar');
+if(dashToggle && dashSidebar){
+  dashToggle.addEventListener('click', () => dashSidebar.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if(dashSidebar.classList.contains('open') && !dashSidebar.contains(e.target) && e.target !== dashToggle){
+      dashSidebar.classList.remove('open');
+    }
+  });
+}
+
+gsap.utils.toArray('.aurora span').forEach((blob, i) => {
+  gsap.to(blob, {
+    x: () => gsap.utils.random(-120, 120),
+    y: () => gsap.utils.random(-100, 100),
+    scale: () => gsap.utils.random(.85, 1.25),
+    duration: () => gsap.utils.random(14, 22),
+    repeat: -1, yoyo: true, ease: 'sine.inOut', delay: i * .8
+  });
+});
+
+function playHero(){
+  document.querySelectorAll('[data-split-hero]').forEach(el => {
+    const split = new SplitText(el, { type: 'lines,words', linesClass: 'line' });
+    gsap.set(split.lines, { overflow:'hidden' });
+    gsap.from(split.words, {
+      yPercent:120, rotate:4, opacity:0, duration:1.1, ease:'power4.out', stagger:.02, delay:.15
+    });
+  });
+  gsap.from('[data-hero-fade]', { opacity:0, y:24, duration:1, ease:'power3.out', stagger:.12, delay:.5 });
+  gsap.from('[data-hero-scale]', { opacity:0, scale:1.25, duration:1.6, ease:'power4.out', delay:.1 });
+  gsap.from('.seal .ring', { opacity:0, scale:.6, duration:1.4, ease:'elastic.out(1,.7)', delay:.5 });
+}
+
+document.querySelectorAll('[data-split]').forEach(el => {
+  const split = new SplitText(el, { type:'lines', linesClass:'line' });
+  gsap.set(split.lines, { overflow:'hidden' });
+  gsap.from(split.lines, {
+    yPercent:110, opacity:0, duration:1, ease:'power4.out', stagger:.08,
+    scrollTrigger:{ trigger: el, start:'top 85%' }
+  });
+});
+
+gsap.utils.toArray('.reveal').forEach(el => {
+  if(el.closest('[data-stagger]')) return;
+  gsap.to(el, {
+    opacity:1, y:0, duration:1, ease:'power3.out',
+    scrollTrigger:{ trigger: el, start:'top 88%' }
+  });
+});
+gsap.utils.toArray('.fade').forEach(el => {
+  gsap.to(el, { opacity:1, duration:1.1, ease:'power2.out', scrollTrigger:{ trigger:el, start:'top 90%' } });
+});
+gsap.utils.toArray('.scale-in').forEach(el => {
+  gsap.to(el, { opacity:1, scale:1, duration:1, ease:'power3.out', scrollTrigger:{ trigger:el, start:'top 88%' } });
+});
+
+document.querySelectorAll('[data-stagger]').forEach(group => {
+  const items = gsap.utils.toArray(group.children);
+  gsap.set(items, { opacity:0, y:50 });
+  ScrollTrigger.batch(items, {
+    start:'top 88%',
+    once:true,
+    onEnter: batch => gsap.to(batch, {
+      opacity:1, y:0, duration:.9, ease:'power3.out', stagger:.12
+    })
+  });
+});
+
+gsap.utils.toArray('.media').forEach(m => {
+  const img = m.querySelector('img');
+  ScrollTrigger.create({
+    trigger:m, start:'top 90%',
+    onEnter:() => { m.classList.add('reveal-in'); gsap.to(img, { scale:1, duration:1.6, ease:'power3.out' }); }
+  });
+  gsap.to(img, {
+    yPercent: -8, ease:'none',
+    scrollTrigger:{ trigger:m, start:'top bottom', end:'bottom top', scrub:1 }
+  });
+});
+
+/* hero background parallax drift */
+gsap.utils.toArray('.hero-bg img').forEach(img => {
+  gsap.to(img, {
+    yPercent: 10, ease:'none',
+    scrollTrigger:{ trigger: img.closest('.hero'), start:'top top', end:'bottom top', scrub:1 }
+  });
+});
+
+gsap.utils.toArray('[data-count]').forEach(el => {
+  const end = parseFloat(el.dataset.count);
+  const obj = { val:0 };
+  ScrollTrigger.create({
+    trigger: el, start:'top 90%', once:true,
+    onEnter:() => gsap.to(obj, {
+      val:end, duration:2, ease:'power2.out',
+      onUpdate:() => el.textContent = (Number.isInteger(end) ? Math.floor(obj.val) : obj.val.toFixed(1)) + (el.dataset.suffix || '')
+    })
+  });
+});
+
+gsap.utils.toArray('.seal .ring-rotate').forEach(r => {
+  gsap.to(r, { rotate:360, transformOrigin:'50% 50%', duration:40, repeat:-1, ease:'none' });
+});
+gsap.utils.toArray('.seal .ring-rotate-rev').forEach(r => {
+  gsap.to(r, { rotate:-360, transformOrigin:'50% 50%', duration:55, repeat:-1, ease:'none' });
+});
+
+gsap.utils.toArray('.path-line').forEach(path => {
+  const len = path.getTotalLength();
+  gsap.set(path, { strokeDasharray:len, strokeDashoffset:len });
+  gsap.to(path, { strokeDashoffset:0, ease:'none', scrollTrigger:{ trigger:path.closest('.pathway'), start:'top 75%', end:'bottom 60%', scrub:1 } });
+});
+
+gsap.utils.toArray('[data-parallax]').forEach(el => {
+  gsap.to(el, {
+    yPercent: parseFloat(el.dataset.parallax) || -14, ease:'none',
+    scrollTrigger:{ trigger: el.parentElement, start:'top bottom', end:'bottom top', scrub:1 }
+  });
+});
+
+document.querySelectorAll('.magnetic').forEach(m => {
+  const strength = 26;
+  m.addEventListener('mousemove', e => {
+    const r = m.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width/2;
+    const y = e.clientY - r.top - r.height/2;
+    gsap.to(m, { x:(x/r.width)*strength, y:(y/r.height)*strength, duration:.5, ease:'power3.out' });
+  });
+  m.addEventListener('mouseleave', () => gsap.to(m, { x:0, y:0, duration:.6, ease:'elastic.out(1,.4)' }));
+});
+
+document.querySelectorAll('.card').forEach(c => {
+  c.addEventListener('mousemove', e => {
+    const r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    c.style.setProperty('--my', `${e.clientY - r.top}px`);
+  });
+});
+
+const cursorBadge = document.querySelector('.cursor-badge');
+if(cursorBadge && window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+  window.addEventListener('mousemove', e => {
+    gsap.to(cursorBadge, { x:e.clientX, y:e.clientY, duration:.6, ease:'power3.out' });
+  });
+  document.querySelectorAll('[data-cursor-badge]').forEach(t => {
+    t.addEventListener('mouseenter', () => gsap.to(cursorBadge, { opacity:1, scale:1, duration:.4, ease:'power3.out' }));
+    t.addEventListener('mouseleave', () => gsap.to(cursorBadge, { opacity:0, scale:.6, duration:.3 }));
+  });
+}
+
+document.querySelectorAll('.marquee-track').forEach(track => {
+  const clone = track.innerHTML;
+  track.innerHTML += clone;
+  gsap.to(track, { xPercent:-50, duration:22, ease:'none', repeat:-1 });
+});
+
+document.querySelectorAll('.custom-dropdown').forEach(dd => {
+  const trigger = dd.querySelector('.dd-trigger');
+  const menu = dd.querySelector('.dd-menu');
+  const label = dd.querySelector('.dd-label');
+  gsap.set(menu, { height:0, opacity:0 });
+  let open = false;
+  trigger.addEventListener('click', () => {
+    open = !open;
+    dd.classList.toggle('open', open);
+    if(open){
+      gsap.set(menu, { height:'auto' });
+      const h = menu.offsetHeight;
+      gsap.fromTo(menu, { height:0, opacity:0 }, { height:h, opacity:1, duration:.4, ease:'power3.out' });
+    } else {
+      gsap.to(menu, { height:0, opacity:0, duration:.3, ease:'power3.in' });
+    }
+  });
+  menu.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      label.textContent = li.textContent;
+      menu.querySelectorAll('li').forEach(x => x.classList.remove('sel'));
+      li.classList.add('sel');
+      trigger.click();
+    });
+  });
+  document.addEventListener('click', e => {
+    if(open && !dd.contains(e.target)){ trigger.click(); }
+  });
+});
+
+function showToast(msg, type='default'){
+  let stack = document.querySelector('.toast-stack');
+  if(!stack){ stack = document.createElement('div'); stack.className='toast-stack'; document.body.appendChild(stack); }
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${msg}</span>`;
+  stack.appendChild(t);
+  gsap.from(t, { x:80, opacity:0, duration:.5, ease:'power3.out' });
+  setTimeout(() => {
+    gsap.to(t, { x:80, opacity:0, duration:.4, ease:'power3.in', onComplete:() => t.remove() });
+  }, 3600);
+}
+window.showToast = showToast;
+
+document.querySelectorAll('form[data-demo-toast]').forEach(f => {
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    showToast(f.dataset.demoToast || 'Submitted successfully', 'success');
+    f.reset();
+  });
+});
+
+document.querySelectorAll('.newsletter-form').forEach(f => {
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    const input = f.querySelector('input[type="email"]');
+    if(input && input.value.includes('@')){
+      showToast('You\u2019re on the list \u2014 confirmation sent.', 'success');
+      input.value = '';
+    } else {
+      showToast('Enter a valid email to subscribe.', 'error');
+    }
+  });
+});
+
+document.querySelectorAll('.pill-nav').forEach(nav => {
+  nav.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      nav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      const target = document.querySelector(nav.dataset.target);
+      if(!target) return;
+      target.querySelectorAll('[data-cat]').forEach(item => {
+        const show = filter === 'all' || item.dataset.cat === filter;
+        gsap.to(item, { opacity: show ? 1 : 0, scale: show ? 1 : .92, duration:.35, ease:'power2.out',
+          onStart:() => { if(show) item.style.display='block'; },
+          onComplete:() => { if(!show) item.style.display='none'; } });
+      });
+    });
+  });
+});
+</script>
+<style>
+.preloader{ position:fixed; inset:0; background:var(--ink); z-index:999; display:flex; align-items:center; justify-content:center; }
+.pre-inner{ text-align:center; }
+.pre-word{ font-family:var(--f-mono); font-size:12px; letter-spacing:.3em; color:var(--gold-2); }
+.pre-bar{ width:220px; height:2px; background:var(--line-soft); margin-top:18px; overflow:hidden; }
+.pre-fill{ height:100%; width:100%; background:var(--gold); transform:scaleX(0); transform-origin:left; }
+</style>
+</body>
+</html>
