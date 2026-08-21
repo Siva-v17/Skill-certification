@@ -233,6 +233,35 @@ h1,h2,h3,h4{ font-family:var(--f-display); font-weight:500; line-height:1.08; le
 .checkline{ display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--text-dim); }
 .checkline input{ width:16px; height:16px; accent-color:var(--gold); }
 
+/* --------------------------- custom dropdown (JS-driven, non-native) ------------ */
+/* Replaces native <select> in places where the OS/browser select popup would
+   render outside our layout (and, on some mobile browsers, wider than the
+   viewport). This is a plain HTML/CSS menu we fully control. */
+.custom-dropdown{ position:relative; min-width:0; }
+.dd-trigger{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--surface); border:1px solid var(--line-soft); border-radius:var(--radius-sm);
+  padding:14px 16px; font-size:15px; color:var(--text); text-align:left; cursor:pointer;
+  transition:border-color .3s, background .3s;
+}
+.dd-trigger .dd-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dd-trigger .dd-arrow{ flex-shrink:0; color:var(--gold); transition:transform .3s var(--ease); font-size:12px; }
+.custom-dropdown.open .dd-trigger{ border-color:var(--gold); background:var(--surface-2); }
+.custom-dropdown.open .dd-arrow{ transform:rotate(180deg); }
+.dd-menu{
+  position:absolute; left:0; right:0; top:calc(100% + 8px); z-index:40;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-sm);
+  overflow:hidden; box-shadow:0 20px 44px -18px rgba(0,0,0,.65);
+  max-width:100%;
+}
+.dd-menu ul{ max-height:240px; overflow-y:auto; }
+.dd-menu li{
+  padding:13px 16px; font-size:14.5px; color:var(--text-dim); cursor:pointer;
+  transition:background .2s, color .2s; white-space:normal; word-break:break-word;
+}
+.dd-menu li:hover{ background:rgba(214,168,87,.08); color:var(--text); }
+.dd-menu li.sel{ background:var(--teal-dim); color:var(--teal); }
+
 /* toast */
 .toast-stack{ position:fixed; bottom:24px; right:24px; z-index:999; display:flex; flex-direction:column; gap:10px; }
 .toast{
@@ -650,11 +679,31 @@ h1,h2,h3,h4{ font-family:var(--f-display); font-weight:500; line-height:1.08; le
         <div class="settings-grid">
           <div class="field"><label>Full name</label><input type="text" id="settingsName" value="Meera S."></div>
           <div class="field"><label>Email</label><input type="email" id="settingsEmail" value="meera@example.com"></div>
-          <div class="field"><label>Time zone</label>
-            <div class="custom-select"><select><option>IST — Asia/Kolkata</option><option>UTC</option><option>PST — America/Los_Angeles</option></select></div>
+          <div class="field">
+            <label>Time zone</label>
+            <div class="custom-dropdown" data-select-id="settingsTimezone">
+              <button type="button" class="dd-trigger"><span class="dd-label">PST — America/Los_Angeles</span><span class="dd-arrow">▾</span></button>
+              <div class="dd-menu">
+                <ul>
+                  <li>IST — Asia/Kolkata</li>
+                  <li>UTC</li>
+                  <li class="sel">PST — America/Los_Angeles</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="field"><label>Notification email</label>
-            <div class="custom-select"><select><option>Weekly digest</option><option>Instant</option><option>Off</option></select></div>
+          <div class="field">
+            <label>Notification email</label>
+            <div class="custom-dropdown" data-select-id="settingsNotify">
+              <button type="button" class="dd-trigger"><span class="dd-label">Weekly digest</span><span class="dd-arrow">▾</span></button>
+              <div class="dd-menu">
+                <ul>
+                  <li class="sel">Weekly digest</li>
+                  <li>Instant</li>
+                  <li>Off</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <label class="checkline" style="margin-top:6px;"><input type="checkbox" checked> Email me when a certification is due for renewal</label>
@@ -1022,7 +1071,11 @@ document.querySelectorAll('.custom-dropdown').forEach(dd => {
     open = !open;
     dd.classList.toggle('open', open);
     if(open){
-      gsap.set(menu, { height:'auto' });
+      // close any other open dropdown first so only one menu is visible
+      document.querySelectorAll('.custom-dropdown.open').forEach(other => {
+        if(other !== dd){ other.querySelector('.dd-trigger').click(); }
+      });
+      gsap.set(menu, { height:'auto', display:'block' });
       const h = menu.offsetHeight;
       gsap.fromTo(menu, { height:0, opacity:0 }, { height:h, opacity:1, duration:.4, ease:'power3.out' });
     } else {
